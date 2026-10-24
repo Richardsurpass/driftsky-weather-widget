@@ -1,82 +1,14 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>driftsky | Leeds Bradford Live Weather Widget</title>
-<style>
-  html,body { margin:0; width:100%; height:100%; overflow:hidden; background:transparent !important; font-family:Arial,Helvetica,sans-serif; color:white; }
-  * { box-sizing:border-box; }
-  /* Compact panel sits just ABOVE an existing lower third, without covering the aircraft. */
-  #widget { position:absolute; right:2.2%; bottom:21.5%; width:min(950px,94vw); background:linear-gradient(110deg,rgba(5,18,31,.94),rgba(9,34,53,.91)); border:2px solid #16c8e9; border-radius:10px; box-shadow:0 0 13px rgba(0,210,255,.18); padding:16px 22px 12px; }
-  .head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; border-bottom:1px solid rgba(47,216,246,.30); padding-bottom:9px; }
-  .airport { font-size:23px; font-weight:800; letter-spacing:.7px; white-space:nowrap; }
-  .airport span { color:#16d1f3; }
-  .cells { display:grid; grid-template-columns:1.25fr .7fr 1fr 1.25fr; gap:12px; }
-  .cell:not(:first-child) { border-left:1px solid rgba(255,255,255,.20); padding-left:14px; }
-  .lab { font-size:14px; color:#83dff4; font-weight:700; letter-spacing:1.2px; margin-bottom:5px; }
-  .val { font-size:25px; font-weight:800; white-space:nowrap; }
-  .weather-text { font-size:22px; }
-  .foot { display:flex; justify-content:space-between; color:#acbfc9; font-size:11px; margin-top:11px; }
-  .status { color:#9ce4f4; }
-  @media(max-width:800px){#widget{width:96vw;right:2vw;padding:10px 12px;bottom:22%}.airport{font-size:14px}.lab{font-size:9px}.val{font-size:13px}.weather-text{font-size:12px}.cells{gap:5px}.cell:not(:first-child){padding-left:5px}.foot{font-size:8px}}
-</style>
-</head>
-<body>
-  <section id="widget" aria-label="Leeds Bradford Airport weather overlay">
-    <div class="head"><div class="airport">LEEDS BRADFORD <span>EGNM</span></div><div style="color:#d7e8ee;font-size:15px;font-weight:700">LIVE AIRPORT WEATHER</div></div>
-    <div class="cells">
-      <div class="cell"><div class="lab">UK LOCAL TIME</div><div class="val" id="clock">--:--:--</div></div>
-      <div class="cell"><div class="lab">TEMP</div><div class="val" id="temp">--°C</div></div>
-      <div class="cell"><div class="lab">WIND</div><div class="val" id="wind">--</div></div>
-      <div class="cell"><div class="lab">CONDITIONS</div><div class="val weather-text" id="weather">Loading...</div></div>
-    </div>
-    <div class="foot"><span>Model weather near EGNM · Weather data: Open-Meteo.com (CC BY 4.0)</span><span class="status" id="status">Connecting...</span></div>
-  </section>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>driftsky | EGNM broadcast ticker</title><style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;color:#fff;font-family:Arial,Helvetica,sans-serif}#bar{position:absolute;bottom:3.2%;left:2%;width:96%;height:14.6%;min-height:100px;max-height:178px;background:linear-gradient(110deg,rgba(4,17,32,.96),rgba(17,46,66,.94));border:2px solid #10c9eb;border-radius:12px;box-shadow:0 0 18px rgba(0,209,241,.22);display:flex;align-items:stretch;overflow:hidden}.brand{background:linear-gradient(130deg,#061826,#10334b);padding:12px 18px;display:flex;flex-direction:column;justify-content:center;gap:8px;border-right:2px solid #16c6ea;min-width:23%}.logo{font-size:clamp(22px,3vw,43px);font-weight:900;font-style:italic;letter-spacing:-1.6px}.logo span{color:#12c9ee}.live{display:inline-flex;gap:8px;align-items:center;font-size:clamp(9px,1vw,14px);font-weight:900;letter-spacing:.12em}.dot{background:#fa253d;border-radius:50%;width:11px;height:11px;box-shadow:0 0 8px #ff3449}.content{flex:1;min-width:0;padding:10px 20px;display:flex;flex-direction:column;justify-content:center}.heading{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #327084;padding-bottom:8px;font-size:clamp(11px,1.25vw,20px);font-weight:900;letter-spacing:.5px}.heading b{color:#2fdbfb}.head-right{font-size:clamp(9px,.8vw,12px);color:#9beafb;white-space:nowrap}.pane{display:none;gap:18px;align-items:center;flex:1;padding:8px 0 4px}.pane.active{display:flex}.metric{flex:1;min-width:0;border-right:1px solid #31586a;padding-right:9px}.metric:last-child{border:0}.name{font-size:clamp(9px,.9vw,13px);color:#85e3f4;font-weight:bold;letter-spacing:.08em}.val{margin-top:4px;font-size:clamp(13px,1.8vw,29px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.secondary{font-size:clamp(13px,1.4vw,22px);font-weight:750}.tiny{font-size:clamp(9px,.74vw,12px);color:#bdcfd8}.flight-line{min-width:0;flex:1;display:flex;flex-direction:column;gap:7px}.flight-main{font-size:clamp(15px,1.8vw,28px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.flight-main em{font-style:normal;color:#21d4f5}.sub{font-size:clamp(10px,.92vw,15px);color:#bbd2df}.tag{border-radius:5px;background:#15455c;border:1px solid #2589a6;padding:7px 12px;font-size:clamp(10px,.94vw,15px);font-weight:bold;white-space:nowrap}.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:clamp(8px,.65vw,10px);color:#a8c7d3}.foot #status{color:#8be6f9;white-space:nowrap}@media(max-width:700px){#bar{height:17%;bottom:3%;min-height:88px}.brand{min-width:22%;padding:6px}.content{padding:6px}.heading{padding-bottom:3px}.pane{gap:4px;padding:3px 0}.name{letter-spacing:0}.logo{letter-spacing:-.5px}.live{gap:3px}.dot{height:6px;width:6px}.foot{gap:2px}}
+</style></head><body><section id="bar" aria-label="Driftsky airport ticker"><div class="brand"><div class="logo">drift<span>sky</span> ✈</div><div class="live"><i class="dot"></i> LIVE • EGNM</div></div><div class="content"><div class="heading"><span>LEEDS BRADFORD AIRPORT <b>EGNM</b></span><span id="mode" class="head-right">LIVE WEATHER</span></div><div id="weatherpane" class="pane active"><div class="metric"><div class="name">UK TIME</div><div class="val" id="clock">--:--:--</div></div><div class="metric"><div class="name">TEMPERATURE</div><div class="val" id="temp">--°C</div></div><div class="metric"><div class="name">WIND</div><div class="val secondary" id="wind">--</div></div><div class="metric"><div class="name">CONDITIONS</div><div class="val secondary" id="conditions">Loading...</div></div></div><div id="planepane" class="pane"><div class="flight-line"><div class="flight-main" id="aircraft">Checking nearby aircraft…</div><div class="sub" id="aircraftsub">Position reports near Leeds Bradford — not official arrivals or departures</div></div><div class="tag" id="flighttag">AIRCRAFT TRACKING</div></div><div class="foot"><span id="credit">Weather: Open-Meteo (CC BY 4.0) • Position data: adsb.lol (ODbL)</span><span id="status">Connecting…</span></div></div></section>
 <script>
-(function(){
-  const $ = id => document.getElementById(id);
-  const formatter = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
-  const dateFormatter = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
-  function clock(){ $('clock').textContent=formatter.format(new Date()); }
-  clock();setInterval(clock,1000);
-  const directions=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-  function describe(code){
-    if(code===0)return 'Clear';
-    if(code===1)return 'Mainly clear';
-    if(code===2)return 'Partly cloudy';
-    if(code===3)return 'Overcast';
-    if(code===45||code===48)return 'Fog';
-    if([51,53,55,56,57].includes(code))return 'Drizzle';
-    if([61,63,65,66,67].includes(code))return 'Rain';
-    if([71,73,75,77].includes(code))return 'Snow';
-    if([80,81,82].includes(code))return 'Showers';
-    if([85,86].includes(code))return 'Snow showers';
-    if([95,96,99].includes(code))return 'Thunderstorm';
-    return 'Variable';
-  }
-  const endpoint='https://api.open-meteo.com/v1/forecast?latitude=53.8659&longitude=-1.6606&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code&wind_speed_unit=mph&temperature_unit=celsius&timezone=Europe%2FLondon';
-  let lastSuccess=null;
-  async function update(){
-    try{
-      const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),12000);
-      let response;
-      try{response=await fetch(endpoint+'&_='+Date.now(),{cache:'no-store',signal:controller.signal});}finally{clearTimeout(timeout);}
-      if(!response.ok)throw new Error('HTTP '+response.status);
-      const json=await response.json();const current=json.current;
-      if(!current||!Number.isFinite(current.temperature_2m)||!Number.isFinite(current.wind_speed_10m)||!Number.isFinite(current.wind_direction_10m))throw new Error('Missing values');
-      $('temp').textContent=Math.round(current.temperature_2m)+'°C';
-      const dir=directions[Math.round(current.wind_direction_10m/22.5)%16];
-      $('wind').textContent=dir+' '+Math.round(current.wind_speed_10m)+' mph';
-      $('weather').textContent=describe(current.weather_code);
-      lastSuccess=Date.now(); $('status').textContent='Updated '+dateFormatter.format(new Date());
-    }catch(e){
-      $('status').textContent=lastSuccess?'Weather update delayed':'Weather unavailable';
-      if(!lastSuccess){$('temp').textContent='--°C';$('wind').textContent='--';$('weather').textContent='Unavailable';}
-    }
-  }
-  update();setInterval(update,5*60*1000);
+(()=>{'use strict';const $=id=>document.getElementById(id);const tf=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});setInterval(()=>$('clock').textContent=tf.format(new Date()),1000);$('clock').textContent=tf.format(new Date());
+const dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];const describe=c=>({0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Showers',95:'Thunderstorm'})[c]||'Variable';
+async function json(url){const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),10000);try{const r=await fetch(url,{cache:'no-store',signal:controller.signal});if(!r.ok)throw Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(timeout)}}
+const meteo='https://api.open-meteo.com/v1/forecast?latitude=53.8659&longitude=-1.6606&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code&wind_speed_unit=mph&timezone=Europe%2FLondon';async function weather(){try{let d=(await json(meteo)).current;if(!d)throw Error('No weather');$('temp').textContent=Math.round(d.temperature_2m)+'°C';$('wind').textContent=dirs[Math.round(d.wind_direction_10m/22.5)%16]+' '+Math.round(d.wind_speed_10m)+' mph';$('conditions').textContent=describe(d.weather_code);$('status').textContent='Weather updated '+tf.format(new Date()).slice(0,5)}catch(e){$('status').textContent='Weather temporarily unavailable';$('conditions').textContent='Data unavailable'}}weather();setInterval(weather,300000);
+// Aircraft positions around airport. These are NOT official flight schedules, terminal movements or confirmed final approach/taxiing.
+const latitude=53.8659, longitude=-1.6606;const rad=x=>x*Math.PI/180;function distKm(lat,lon){const dlat=rad(lat-latitude),dlon=rad(lon-longitude);const a=Math.sin(dlat/2)**2+Math.cos(rad(latitude))*Math.cos(rad(lat))*Math.sin(dlon/2)**2;return 12742*Math.asin(Math.sqrt(a))}
+let planes=[];async function traffic(){try{const d=await json('https://api.adsb.lol/v2/point/53.8659/-1.6606/12');const list=(d.ac||[]).filter(a=>Number.isFinite(a.lat)&&Number.isFinite(a.lon)&&Number(a.seen_pos??0)<45).map(a=>({...a,km:distKm(a.lat,a.lon)})).filter(a=>a.km<21).sort((a,b)=>a.km-b.km);planes=list.slice(0,8);if(!planes.length){$('aircraft').textContent='No nearby aircraft currently reported';$('aircraftsub').textContent='Waiting for new aircraft position reports';$('flighttag').textContent='NEAR EGNM';return}const ac=planes[0],flight=String(ac.flight||ac.r||ac.hex||'Unknown').trim(),alt=typeof ac.alt_baro==='number'?ac.alt_baro+' ft':ac.alt_baro==='ground'?'On ground':'Altitude unknown';$('aircraft').textContent=flight+' • '+ac.km.toFixed(1)+' km from airport';$('aircraftsub').textContent=alt+(typeof ac.baro_rate==='number'?' • '+(ac.baro_rate< -200?'Descending':ac.baro_rate>200?'Climbing':'Level/slow vertical change'):'')+' • Observed position';$('flighttag').textContent='NEAR EGNM'}catch(e){$('aircraft').textContent='Aircraft tracking unavailable';$('aircraftsub').textContent='Flight-data provider blocked, limited or temporarily offline';$('flighttag').textContent='NO LIVE POSITION DATA'}}traffic();setInterval(traffic,60000);
+let showWeather=true;setInterval(()=>{showWeather=!showWeather;$('weatherpane').classList.toggle('active',showWeather);$('planepane').classList.toggle('active',!showWeather);$('mode').textContent=showWeather?'LIVE WEATHER':'AIRCRAFT NEAR AIRPORT'},12000);
 })();
-</script>
-</body>
-</html>
+</script></body></html>
