@@ -1,281 +1,43 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>driftsky | Leeds Bradford weather and flights overlay v10</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>driftsky v11 | Live EGNM</title>
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;color:#fff;font-family:Arial,Helvetica,sans-serif}
-:root{
-  --cyan:#168BFF;
-  --cyan2:#83BDFF;
-  --bg1:rgba(2,4,10,.98);
-  --bg2:rgba(3,17,40,.97);
-  --line:#244c82;
-}
-#bar{
-  position:absolute;left:1.1%;bottom:2.4%;width:97.8%;height:19.5%;min-height:180px;max-height:225px;
-  display:flex;overflow:hidden;
-  background:linear-gradient(110deg,var(--bg1),var(--bg2));
-  border:2px solid var(--cyan);border-radius:14px;box-shadow:0 0 18px rgba(22,139,255,.35);
-}
-.brand{
-  width:15%;min-width:140px;max-width:230px;
-  border-right:2px solid #1576d2;padding:12px 18px;
-  display:flex;flex-direction:column;justify-content:center;gap:8px
-}
-.logo{font-size:clamp(20px,2.3vw,44px);font-weight:900;font-style:italic;letter-spacing:-1.3px;white-space:nowrap}
-.logo span{color:var(--cyan)}
-.live{font-size:clamp(10px,.9vw,15px);font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px;white-space:nowrap}
-.dot{width:11px;height:11px;border-radius:50%;background:#ff2645;display:inline-block;box-shadow:0 0 8px rgba(255,38,69,.45)}
-.right{flex:1;min-width:0;padding:7px 13px 7px;display:flex;flex-direction:column;gap:5px;justify-content:space-between}
-.head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:4px;flex:0 0 27px;min-height:0}
-.airport{font-size:clamp(14px,1.6vw,24px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.airport b{color:var(--cyan)}
-.mode{font-size:clamp(11px,.92vw,16px);font-weight:800;color:#9dcdff;letter-spacing:.06em;white-space:nowrap}
-.weather{display:flex;align-items:center;gap:14px;min-width:0;flex:0 0 43px;min-height:0;border-top:1px solid #244b78;padding-top:4px}
-.metric{flex:1;min-width:0;border-right:1px solid #244b78;padding-right:10px}
-.metric:last-child{border-right:0}
-.name{font-size:clamp(9px,.83vw,14px);font-weight:700;color:#8fc2ff;letter-spacing:.08em}
-.val{margin-top:2px;font-size:clamp(14px,1.35vw,23px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.val.small{font-size:clamp(12px,1.2vw,21px)}
-.nextFlights{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0;flex:0 0 39px;align-items:stretch}
-.nextItem{background:rgba(8,35,67,.8);border:1px solid #244c82;border-radius:7px;padding:5px 8px;min-width:0;display:flex;align-items:center;gap:10px}
-.nextLabel{color:#91caff;font-size:clamp(10px,.75vw,13px);font-weight:900;white-space:nowrap}
-.nextText{font-size:clamp(12px,1.05vw,18px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tickerWrap{
-  flex:0 0 31px;height:31px;border-top:1px solid rgba(100,166,255,.32);
-  display:flex;align-items:center;gap:10px;min-width:0;padding-top:3px;overflow:hidden
-}
-.tickerLabel{
-  display:flex;align-items:center;gap:8px;min-width:max-content;
-  font-size:clamp(10px,.92vw,15px);font-weight:800;color:#a8d3ff;
-  border:1px solid #2676bc;border-radius:999px;padding:3px 9px;background:rgba(2,8,20,.65)
-}
-#planeIcon{display:inline-block;transform-origin:center;filter:drop-shadow(0 0 4px rgba(22,139,255,.45))}
-#planeIcon.arrive{animation:landIn 0.8s ease}
-#planeIcon.depart{animation:takeOff 0.8s ease}
-@keyframes landIn{
-  0%{transform:translateX(18px) translateY(-8px) rotate(-14deg);opacity:0}
-  70%{transform:translateX(-2px) translateY(0) rotate(0);opacity:1}
-  100%{transform:translateX(0) translateY(0) rotate(0);opacity:1}
-}
-@keyframes takeOff{
-  0%{transform:translateX(-16px) translateY(8px) rotate(12deg);opacity:0}
-  70%{transform:translateX(2px) translateY(0) rotate(0);opacity:1}
-  100%{transform:translateX(0) translateY(0) rotate(0);opacity:1}
-}
-.tickerViewport{position:relative;overflow:hidden;flex:1;min-width:0;height:100%;display:flex;align-items:center}
-.tickerTrack{
-  display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-width:max-content;
-  will-change:transform;animation:scrollLeft 85s linear infinite;
-}
-.tickerTrack.paused{animation-play-state:paused}.tickerTrack.empty{animation:none!important;transform:none!important}
-@keyframes scrollLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.tickerContent{display:inline-flex;align-items:center;padding-right:46px;font-size:clamp(12px,1vw,18px);font-weight:700;color:#fff}
-.tickerContent .sep{color:#62aaff;padding:0 14px;font-weight:700}
-.footer{display:flex;justify-content:space-between;gap:10px;font-size:clamp(8px,.62vw,11px);color:#9ab8d8;white-space:nowrap;overflow:hidden;flex:0 0 12px;line-height:12px}
-.footer span{overflow:hidden;text-overflow:ellipsis}
-@media (max-width:900px){
-  .brand{width:18%;min-width:0;padding:8px 10px}
-  .right{padding:6px 8px 8px}
-  .weather{gap:8px;flex-basis:42px}
-  .nextFlights{gap:5px;flex-basis:37px;min-height:0}
-  .nextItem{padding:3px 5px;gap:5px}
-  .nextLabel{font-size:9px}
-  .nextText{font-size:11px}
-  .tickerWrap{gap:6px;flex-basis:30px;height:30px}
-  .tickerLabel{padding:5px 8px}
-}
-</style>
-</head>
-<body>
-<section id="bar" aria-label="driftsky overlay">
-  <div class="brand">
-    <div class="logo">drift<span>sky</span> ✈</div>
-    <div class="live"><span class="dot"></span> LIVE · EGNM</div>
-  </div>
-
-  <div class="right">
-    <div class="head">
-      <span class="airport">LEEDS BRADFORD <b>EGNM</b></span>
-      <span class="mode" id="mode">FLIGHT INFORMATION</span>
-    </div>
-
-    <div class="nextFlights">
-      <div class="nextItem"><span class="nextLabel">🛬 NEXT ARRIVAL</span><span class="nextText" id="nextArrival">Checking flights…</span></div>
-      <div class="nextItem"><span class="nextLabel">🛫 NEXT DEPARTURE</span><span class="nextText" id="nextDeparture">Checking flights…</span></div>
-    </div>
-    <div class="tickerWrap">
-      <div class="tickerLabel"><span id="planeIcon" class="arrive">🛬</span> <span id="tickerMode">ARRIVALS TIMETABLE</span></div>
-      <div class="tickerViewport">
-        <div id="tickerTrack" class="tickerTrack paused">
-          <div id="tickerContentA" class="tickerContent">Loading flights…</div>
-          <div id="tickerContentB" class="tickerContent">Loading flights…</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="weather">
-      <div class="metric"><div class="name">UK TIME</div><div id="clock" class="val">--:--:--</div></div>
-      <div class="metric"><div class="name">TEMPERATURE</div><div id="temp" class="val">--°C</div></div>
-      <div class="metric"><div class="name">WIND</div><div id="wind" class="val small">--</div></div>
-      <div class="metric"><div class="name">CONDITIONS</div><div id="conditions" class="val small">Loading…</div></div>
-    </div>
-
-    <div class="footer">
-      <span>Weather: Open-Meteo (CC BY 4.0) · Flights: AeroDataBox · aerodatabox.com</span>
-      <span id="updated">Waiting for data…</span>
-    </div>
-  </div>
-</section>
-
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:transparent!important;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#fff}
+#bar{position:absolute;bottom:2%;left:1%;width:98%;height:18.5%;min-height:170px;max-height:215px;background:linear-gradient(110deg,rgba(2,5,12,.98),rgba(5,22,49,.97));border:2px solid #147ef5;border-radius:12px;display:flex;overflow:hidden;box-shadow:0 0 15px #1165c044}
+.brand{width:12%;min-width:0;border-right:1px solid #225896;padding:12px 10px;display:flex;flex-direction:column;justify-content:center;gap:9px;overflow:hidden}.logo{font-weight:900;font-style:italic;letter-spacing:-1.5px;font-size:clamp(14px,1.7vw,30px);white-space:nowrap}.logo span{color:#2999ff}.live{font-size:clamp(9px,.84vw,13px);font-weight:800;letter-spacing:.04em;white-space:nowrap}.dot{display:inline-block;width:9px;height:9px;background:#f43d57;border-radius:50%;margin-right:6px}
+.main{flex:1;min-width:0;display:grid;grid-template-rows:25px minmax(0,1fr) 31px 44px 13px;gap:4px;padding:7px 13px 6px}
+.head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #234568;gap:10px;min-width:0}.airport{font-weight:900;font-size:clamp(12px,1.3vw,22px);white-space:nowrap}.airport b{color:#329aff}.subtitle{font-size:clamp(9px,.76vw,13px);letter-spacing:.08em;color:#a6ccff;font-weight:800}
+.flights{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:0;min-height:0}.flight{min-width:0;border:1px solid #245488;background:#0d2948;border-radius:6px;padding:5px 9px;display:flex;flex-direction:column;justify-content:center;gap:3px}.flightTitle{font-size:clamp(10px,.8vw,14px);font-weight:900;color:#8bc4ff}.flightValue{font-size:clamp(12px,1.15vw,20px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.flightMeta{font-size:clamp(10px,.77vw,13px);color:#c1d7f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.board{display:flex;align-items:center;gap:10px;min-width:0;overflow:hidden;border-radius:5px;background:#0a1b35;border:1px solid #204d7e;padding:4px 10px}.boardLabel{flex-shrink:0;font-weight:900;font-size:clamp(10px,.77vw,13px);color:#8cc6ff}.boardData{flex:1;min-width:0;font-size:clamp(11px,.94vw,16px);font-weight:750;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.boardIndex{color:#9fc8f0;font-size:11px;flex-shrink:0}
+.weather{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;border-top:1px solid #20466c;padding-top:4px}.metric{min-width:0;padding-right:7px;border-right:1px solid #265179}.metric:last-child{border:0}.metricName{font-size:clamp(9px,.68vw,12px);color:#84bbff;font-weight:900;letter-spacing:.06em}.metricValue{font-size:clamp(14px,1.35vw,24px);font-weight:900;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.footer{font-size:clamp(8px,.52vw,10px);color:#9fb8cf;display:flex;justify-content:space-between;gap:8px;overflow:hidden;white-space:nowrap}.footer span{overflow:hidden;text-overflow:ellipsis}
+@media(max-width:900px){.main{padding:6px;gap:2px;grid-template-rows:23px minmax(0,1fr) 28px 42px 12px}.brand{padding:7px}.flights{gap:5px}.flight{padding:4px}.subtitle{font-size:9px}}
+</style></head><body>
+<section id="bar"><aside class="brand"><div class="logo">drift<span>sky</span></div><div class="live"><span class="dot"></span>LIVE · EGNM</div></aside>
+<div class="main"><header class="head"><div class="airport">LEEDS BRADFORD <b>EGNM</b></div><div class="subtitle">FLIGHT INFORMATION</div></header>
+<div class="flights"><div class="flight"><div class="flightTitle">🛬 NEXT EXPECTED ARRIVAL</div><div id="arrival" class="flightValue">Checking flight feed…</div><div id="arrivalMeta" class="flightMeta">Leeds Bradford Airport</div></div><div class="flight"><div class="flightTitle">🛫 NEXT EXPECTED DEPARTURE</div><div id="departure" class="flightValue">Checking flight feed…</div><div id="departureMeta" class="flightMeta">Leeds Bradford Airport</div></div></div>
+<div id="board" class="board"><span id="boardLabel" class="boardLabel">🛬 ARRIVALS</span><span id="boardData" class="boardData">Checking timetable…</span><span id="boardIndex" class="boardIndex"></span></div>
+<div class="weather"><div class="metric"><div class="metricName">UK LOCAL TIME</div><div id="clock" class="metricValue">--:--:--</div></div><div class="metric"><div class="metricName">TEMPERATURE</div><div id="temp" class="metricValue">--°C</div></div><div class="metric"><div class="metricName">WIND</div><div id="wind" class="metricValue">--</div></div><div class="metric"><div class="metricName">CONDITIONS</div><div id="conditions" class="metricValue">Loading…</div></div></div>
+<div class="footer"><span>Weather: Open-Meteo (CC BY 4.0) · Flights: AeroDataBox · aerodatabox.com</span><span id="updated">v11 · Waiting for feed</span></div></div></section>
 <script>
 (()=>{'use strict';
 const API='https://driftsky-flight-data.rick-harrison.workers.dev/flights';
 const METEO='https://api.open-meteo.com/v1/forecast?latitude=53.8659&longitude=-1.6606&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code&wind_speed_unit=mph&timezone=Europe%2FLondon';
 const $=id=>document.getElementById(id);
-const tf=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
-const timeFmt=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+const dtf=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
 const dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-const weatherCodes={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Showers',95:'Thunderstorm'};
-let flights={arrivals:[],departures:[]}, currentTicker='arrivals', fetchedAt=null;
-
-function clock(){ $('clock').textContent=tf.format(new Date()); }
-clock(); setInterval(clock,1000);
-
-function parseTimeValue(s){
-  if(!s) return null;
-  const text=String(s).trim();
-  const direct = new Date(text);
-  if(!Number.isNaN(direct.getTime())) return direct;
-  const normalized = text.replace(' ','T');
-  const alt = new Date(normalized);
-  return Number.isNaN(alt.getTime()) ? null : alt;
-}
-function shortTime(s){
-  const match=String(s||'').match(/[T ](\d{2}:\d{2})/);
-  return match ? match[1] : 'Time unavailable';
-}
-function getStatusRank(f){
-  const status=(f.status||'').toLowerCase();
-  if(/expected|scheduled|boarding|gate|delayed/.test(status)) return 0;
-  if(/departed|airborne|en route|enroute/.test(status)) return 1;
-  if(/landed|arrived/.test(status)) return 2;
-  if(/unknown|cancel/.test(status)) return 3;
-  return 2;
-}
-function pendingFlights(type){
-  const now=Date.now();
-  return (flights[type]||[]).filter(f=>{
-    const state=String(f.status||'').toLowerCase();
-    if(/arrived|landed|departed|cancelled|canceled|diverted/.test(state))return false;
-    const t=parseTimeValue(type==='arrivals'?f.arrivalTime:f.departureTime);
-    return t && t.getTime() >= now-15*60000;
-  }).sort((a,b)=>{
-    const ta=parseTimeValue(type==='arrivals'?a.arrivalTime:a.departureTime).getTime();
-    const tb=parseTimeValue(type==='arrivals'?b.arrivalTime:b.departureTime).getTime();
-    return ta-tb;
-  });
-}
-function sortFlights(list,type){
-  const pending=pendingFlights(type);
-  const used=new Set(pending);
-  const rest=list.filter(f=>!used.has(f));
-  return [...pending,...rest];
-}
-function updateNext(){
-  for(const type of ['arrivals','departures']){
-    const f=pendingFlights(type)[0];
-    const target=$(type==='arrivals'?'nextArrival':'nextDeparture');
-    const t=f&&shortTime(type==='arrivals'?f.arrivalTime:f.departureTime);
-    target.textContent=f?`${f.number||'Flight'} · ${type==='arrivals'?(f.origin||'Origin unknown'):(f.destination||'Destination unknown')} · ${t} · ${f.status||'Scheduled'}`:'No upcoming flight in current feed';
-  }
-}
-function flightLine(f,type){
-  const flight=String(f.number||'Flight').trim();
-  const airline=String(f.airline||'').trim();
-  const route=type==='arrivals' ? ('from '+(f.origin||'Unknown origin')) : ('to '+(f.destination||'Unknown destination'));
-  const tm=shortTime(type==='arrivals'?f.arrivalTime:f.departureTime);
-  const status=String(f.status||'Status unknown').trim();
-  const plane=String(f.aircraft||'').trim();
-  return [flight, airline, route, tm, status, plane].filter(Boolean).join(' · ');
-}
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-}
-function buildTicker(type){
-  const sorted=sortFlights(flights[type]||[],type).slice(0,10);
-  if(!sorted.length) return type==='arrivals' ? 'No arrival data available right now' : 'No departure data available right now';
-  return sorted.map(f=>escapeHtml(flightLine(f,type))).join('<span class="sep">•</span>');
-}
-function setTicker(type){
-  currentTicker=type;
-  $('tickerMode').textContent = type==='arrivals' ? 'ARRIVALS TIMETABLE' : 'DEPARTURES TIMETABLE';
-  const icon=$('planeIcon');
-  icon.textContent = type==='arrivals' ? '🛬' : '🛫';
-  icon.className = type==='arrivals' ? 'arrive' : 'depart';
-  const html = buildTicker(type);
-  // Restart the scroll from the beginning when changing lists.
-  $('tickerTrack').style.animation='none';
-  void $('tickerTrack').offsetWidth;
-  $('tickerTrack').style.animation='';
-  $('tickerContentA').innerHTML = html;
-  const noData = /No .* data available/.test(html);
-  $('tickerContentB').innerHTML = noData ? '' : html;
-  $('tickerTrack').classList.toggle('paused', noData);
-  $('tickerTrack').classList.toggle('empty', noData);
-}
-function cycleTicker(){ setTicker(currentTicker==='arrivals' ? 'departures' : 'arrivals'); }
-
-async function get(url){
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),12000);
-  try{
-    const r=await fetch(url,{cache:'no-store',signal:controller.signal});
-    if(!r.ok) throw Error('HTTP '+r.status);
-    return await r.json();
-  }finally{ clearTimeout(timer); }
-}
-
-async function loadWeather(){
-  try{
-    const d=(await get(METEO)).current;
-    if(!d) throw Error('No readings');
-    $('temp').textContent=Math.round(d.temperature_2m)+'°C';
-    $('wind').textContent=dirs[Math.round(d.wind_direction_10m/22.5)%16]+' '+Math.round(d.wind_speed_10m)+' mph';
-    $('conditions').textContent=weatherCodes[d.weather_code]||'Variable';
-  }catch(e){
-    $('conditions').textContent='Weather unavailable';
-  }
-}
-
-async function loadFlights(){
-  try{
-    const d=await get(API);
-    if(!Array.isArray(d.arrivals)||!Array.isArray(d.departures)) throw Error('Invalid response');
-    flights=d;
-    fetchedAt=parseTimeValue(d.updated) || new Date();
-    setTicker(currentTicker);
-    updateNext();
-    $('updated').textContent='Flight feed updated '+timeFmt.format(fetchedAt)+' · cached data';
-  }catch(e){
-    flights={arrivals:[],departures:[]};
-    setTicker(currentTicker);
-    updateNext();
-    $('updated').textContent='Flight feed unavailable · weather online';
-    console.warn('Flight feed unavailable:',e.message);
-  }
-}
-
-loadWeather();
-loadFlights();
-setInterval(loadWeather,300000);
-setInterval(loadFlights,900000);
-setInterval(cycleTicker,60000);
-setInterval(updateNext,60000);
+const codes={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Showers',95:'Thunderstorm'};
+let feed={arrivals:[],departures:[]},step=0,loading=false;
+function clock(){ $('clock').textContent=dtf.format(new Date()); }
+clock();setInterval(clock,1000);
+function parse(s){if(!s)return null;const d=new Date(String(s).replace(' ','T'));return Number.isFinite(d.getTime())?d:null}
+function time(s){const m=String(s||'').match(/[T ](\d\d:\d\d)/);return m?m[1]:'Time TBC'}
+function candidates(type){const now=Date.now();return (feed[type]||[]).filter(f=>{const status=String(f.status||'').toLowerCase();if(/arrived|landed|departed|cancelled|canceled|diverted/.test(status))return false;const date=parse(type==='arrivals'?f.arrivalTime:f.departureTime);return date&&date.getTime()>=now-15*60000}).sort((a,b)=>parse(type==='arrivals'?a.arrivalTime:a.departureTime)-parse(type==='arrivals'?b.arrivalTime:b.departureTime))}
+function render(){for(const type of ['arrivals','departures']){const f=candidates(type)[0],key=type==='arrivals'?'arrival':'departure',route=type==='arrivals'?'origin':'destination',tm=type==='arrivals'?'arrivalTime':'departureTime';$(key).textContent=f?`${f.number||'Flight'} · ${f[route]||'Route TBC'} · ${time(f[tm])}`:'No upcoming flight in current feed';$(key+'Meta').textContent=f?`${f.airline||'Airline TBC'} · ${f.status||'Scheduled'} · ${f.aircraft||'Aircraft TBC'}`:'Awaiting a refreshed airport timetable'}renderBoard()}
+function renderBoard(){let type=(Math.floor(step/3)%2===0)?'arrivals':'departures';let list=candidates(type);if(!list.length)list=feed[type]||[];const ix=Math.floor(step%3)%Math.max(1,Math.min(list.length,3)),f=list[ix];$('boardLabel').textContent=type==='arrivals'?'🛬 ARRIVALS':'🛫 DEPARTURES';$('boardData').textContent=f?`${f.number||'Flight'} · ${f.airline||'Airline TBC'} · ${type==='arrivals'?'From':'To'} ${f[type==='arrivals'?'origin':'destination']||'Route TBC'} · ${time(f[type==='arrivals'?'arrivalTime':'departureTime'])} · ${f.status||'Scheduled'}`:'No timetable data available';$('boardIndex').textContent=f?`${ix+1}/${Math.min(list.length,3)}`:''}
+async function request(base){const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),12000);try{const u=base+(base.includes('?')?'&':'?')+'_ts='+Date.now();const r=await fetch(u,{cache:'no-store',signal:ctrl.signal,headers:{'Cache-Control':'no-cache'}});if(!r.ok)throw Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(timer)}}
+async function weather(){try{let w=(await request(METEO)).current;if(!w)throw Error('no current');$('temp').textContent=Math.round(w.temperature_2m)+'°C';$('wind').textContent=dirs[Math.round(w.wind_direction_10m/22.5)%16]+' '+Math.round(w.wind_speed_10m)+' mph';$('conditions').textContent=codes[w.weather_code]||'Variable'}catch(e){$('conditions').textContent='Weather temporarily unavailable'}}
+async function flights(){if(loading)return;loading=true;try{const r=await request(API);if(!Array.isArray(r.arrivals)||!Array.isArray(r.departures))throw Error('Bad feed');feed=r;render();const updated=parse(r.updated);$('updated').textContent='v11 · Flight data '+(updated?dtf.format(updated).slice(0,5):'time unknown')+' (cached)'}catch(e){$('updated').textContent='v11 · Flight feed unavailable; weather active';render();console.warn('Flight feed:',e)}finally{loading=false}}
+weather();flights();setInterval(weather,300000);setInterval(flights,120000);setInterval(()=>{step++;renderBoard()},11000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){clock();weather();flights()}});
+window.addEventListener('focus',()=>{clock();flights()});
 })();
-</script>
-</body>
-</html>
+</script></body></html>
