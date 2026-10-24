@@ -8,48 +8,48 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;color:#fff;font-family:Arial,Helvetica,sans-serif}
 :root{
-  --cyan:#16d4f5;
-  --cyan2:#81f4ff;
-  --bg1:rgba(5,18,33,.97);
-  --bg2:rgba(18,46,64,.96);
-  --line:#3c6f84;
+  --cyan:#168BFF;
+  --cyan2:#83BDFF;
+  --bg1:rgba(2,4,10,.98);
+  --bg2:rgba(3,17,40,.97);
+  --line:#244c82;
 }
 #bar{
-  position:absolute;left:1.1%;bottom:2.4%;width:97.8%;height:16.5%;min-height:108px;max-height:210px;
+  position:absolute;left:1.1%;bottom:2.4%;width:97.8%;height:22%;min-height:190px;max-height:250px;
   display:flex;overflow:hidden;
   background:linear-gradient(110deg,var(--bg1),var(--bg2));
-  border:2px solid var(--cyan);border-radius:14px;box-shadow:0 0 16px rgba(0,209,241,.28);
+  border:2px solid var(--cyan);border-radius:14px;box-shadow:0 0 18px rgba(22,139,255,.35);
 }
 .brand{
   width:15.5%;min-width:160px;max-width:250px;
-  border-right:2px solid #12bedf;padding:12px 18px;
+  border-right:2px solid #1576d2;padding:12px 18px;
   display:flex;flex-direction:column;justify-content:center;gap:8px
 }
 .logo{font-size:clamp(20px,2.3vw,44px);font-weight:900;font-style:italic;letter-spacing:-1.3px;white-space:nowrap}
 .logo span{color:var(--cyan)}
 .live{font-size:clamp(10px,.9vw,15px);font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .dot{width:11px;height:11px;border-radius:50%;background:#ff2645;display:inline-block;box-shadow:0 0 8px rgba(255,38,69,.45)}
-.right{flex:1;min-width:0;padding:8px 16px 10px;display:flex;flex-direction:column;gap:8px}
-.head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px}
+.right{flex:1;min-width:0;padding:10px 16px 10px;display:flex;flex-direction:column;gap:6px;justify-content:space-between}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:7px;flex:0 0 auto}
 .airport{font-size:clamp(14px,1.6vw,24px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .airport b{color:var(--cyan)}
-.mode{font-size:clamp(11px,.92vw,16px);font-weight:800;color:#b2f5ff;letter-spacing:.06em;white-space:nowrap}
-.weather{display:flex;align-items:center;gap:16px;min-width:0;flex:1}
-.metric{flex:1;min-width:0;border-right:1px solid #385f72;padding-right:10px}
+.mode{font-size:clamp(11px,.92vw,16px);font-weight:800;color:#9dcdff;letter-spacing:.06em;white-space:nowrap}
+.weather{display:flex;align-items:center;gap:16px;min-width:0;flex:1 1 auto;min-height:48px}
+.metric{flex:1;min-width:0;border-right:1px solid #244b78;padding-right:10px}
 .metric:last-child{border-right:0}
-.name{font-size:clamp(9px,.83vw,14px);font-weight:700;color:#98e0ee;letter-spacing:.08em}
+.name{font-size:clamp(9px,.83vw,14px);font-weight:700;color:#8fc2ff;letter-spacing:.08em}
 .val{margin-top:4px;font-size:clamp(15px,1.72vw,30px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .val.small{font-size:clamp(13px,1.35vw,24px)}
 .tickerWrap{
-  height:38px;border-top:1px solid rgba(132,214,227,.18);
-  display:flex;align-items:center;gap:10px;min-width:0;padding-top:6px
+  flex:0 0 42px;height:42px;border-top:1px solid rgba(100,166,255,.32);
+  display:flex;align-items:center;gap:10px;min-width:0;padding-top:3px;overflow:hidden
 }
 .tickerLabel{
   display:flex;align-items:center;gap:8px;min-width:max-content;
-  font-size:clamp(10px,.92vw,15px);font-weight:800;color:#b3f6ff;
-  border:1px solid #267e93;border-radius:999px;padding:6px 11px;background:rgba(0,0,0,.12)
+  font-size:clamp(10px,.92vw,15px);font-weight:800;color:#a8d3ff;
+  border:1px solid #2676bc;border-radius:999px;padding:6px 11px;background:rgba(2,8,20,.65)
 }
-#planeIcon{display:inline-block;transform-origin:center;filter:drop-shadow(0 0 4px rgba(22,212,245,.45))}
+#planeIcon{display:inline-block;transform-origin:center;filter:drop-shadow(0 0 4px rgba(22,139,255,.45))}
 #planeIcon.arrive{animation:landIn 0.8s ease}
 #planeIcon.depart{animation:takeOff 0.8s ease}
 @keyframes landIn{
@@ -70,14 +70,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 .tickerTrack.paused{animation-play-state:paused}
 @keyframes scrollLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .tickerContent{display:inline-flex;align-items:center;padding-right:46px;font-size:clamp(12px,1vw,18px);font-weight:700;color:#fff}
-.tickerContent .sep{color:#6fdff0;padding:0 14px;font-weight:700}
-.footer{display:flex;justify-content:space-between;gap:10px;font-size:clamp(8px,.62vw,11px);color:#aecdd9;white-space:nowrap;overflow:hidden}
+.tickerContent .sep{color:#62aaff;padding:0 14px;font-weight:700}
+.footer{display:flex;justify-content:space-between;gap:10px;font-size:clamp(8px,.62vw,11px);color:#9ab8d8;white-space:nowrap;overflow:hidden;flex:0 0 13px;line-height:13px}
 .footer span{overflow:hidden;text-overflow:ellipsis}
 @media (max-width:900px){
   .brand{width:18%;min-width:0;padding:8px 10px}
   .right{padding:6px 8px 8px}
   .weather{gap:8px}
-  .tickerWrap{gap:6px;height:34px}
+  .tickerWrap{gap:6px;flex-basis:40px;height:40px}
   .tickerLabel{padding:5px 8px}
 }
 </style>
