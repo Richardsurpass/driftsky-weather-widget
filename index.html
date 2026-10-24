@@ -13,7 +13,7 @@
 <div id="arrivals" class="pane"><div class="flight"><div class="primary" id="arrtitle">Arrivals loading…</div><div class="secondary" id="arrsub">Leeds Bradford Airport</div></div><div id="arrtag" class="tag">ARRIVALS</div></div>
 <div id="departures" class="pane"><div class="flight"><div class="primary" id="deptitle">Departures loading…</div><div class="secondary" id="depsub">Leeds Bradford Airport</div></div><div id="deptag" class="tag">DEPARTURES</div></div>
 <div id="positions" class="pane"><div class="flight"><div class="primary" id="postitle">Position reports</div><div class="secondary" id="possub">Current positions when available</div></div><div class="tag">POSITION REPORT</div></div>
-<div class="footer"><span>Weather: Open-Meteo (CC BY 4.0) · Flights: AeroDataBox · aerodatabox.com</span><span id="updated">Waiting for data…</span></div></div></section>
+<div class="footer"><span>Weather: Open-Meteo (CC BY 4.0) · Flights: AeroDataBox · aerodatabox.com · flight positions may be delayed</span><span id="updated">Waiting for data…</span></div></div></section>
 <script>
 (()=>{'use strict';
 const API='https://driftsky-flight-data.rick-harrison.workers.dev/flights';
@@ -24,34 +24,97 @@ const dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','
 const weatherCodes={0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Overcast',45:'Fog',48:'Fog',51:'Drizzle',53:'Drizzle',55:'Drizzle',61:'Rain',63:'Rain',65:'Heavy rain',71:'Snow',73:'Snow',75:'Snow',80:'Showers',81:'Showers',82:'Showers',95:'Thunderstorm'};
 async function get(url){const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),12000);try{const r=await fetch(url,{cache:'no-store',signal:controller.signal});if(!r.ok)throw Error('HTTP '+r.status);return await r.json()}finally{clearTimeout(timer)}}
 async function loadWeather(){try{const d=(await get(METEO)).current;if(!d)throw Error('No readings');$('temp').textContent=Math.round(d.temperature_2m)+'°C';$('wind').textContent=dirs[Math.round(d.wind_direction_10m/22.5)%16]+' '+Math.round(d.wind_speed_10m)+' mph';$('conditions').textContent=weatherCodes[d.weather_code]||'Variable'}catch(e){$('conditions').textContent='Weather unavailable'}}
-let flights=[], available=['weather'], panel=0,flightFetched=null;
+let flights={arrivals:[],departures:[]}, available=['weather'], panel=0, flightFetched=null;
+const cursor={arrivals:0,departures:0,positions:0};
 const clean=x=>String(x??'').trim();
-
-function time(s) {
-  if (!s) return 'Time unavailable';
-  const m = String(s).match(/[T ](\d{2}:\d{2})/);
-  return m ? m[1] : 'Time unavailable';
+// AeroDataBox sends both "2026-10-24 13:50+01:00" and ISO timestamps.
+function flightTime(s){
+ if(!s)return 'Time unavailable';
+ const m=String(s).match(/[T ](\d{2}:\d{2})(?::\d{2})?/);
+ return m?m[1]:'Time unavailable';
 }
-
-function renderFlight(type){const list=flights[type]||[];if(!list.length)return false;const f=list.find(x=>x.status&&x.status!=='Unknown')||list[0],arrival=type==='arrivals';
- $(arrival?'arrtitle':'deptitle').textContent=[clean(f.number)||'Flight',clean(f.airline)].filter(Boolean).join(' · ');
+function flightEpoch(s){
+ if(!s)return NaN;
+ const str=String(s).trim().replace(' ','T');
+ const parsed=Date.parse(str);
+ return Number.isFinite(parsed)?parsed:NaN;
+}
+function flightDate(f,type){return flightEpoch(type==='arrivals'?f.arrivalTime:f.departureTime)}
+const ended=f=>/arrived|landed|departed|cancelled|canceled|diverted/i.test(clean(f.status));
+function orderedFlights(type){
+ const now=Date.now();
+ const list=(flights[type]||[]).filter(x=>x&&typeof x==='object');
+ // Flights with a known future time come first, then un-timed, then completed/past flights.
+ return list.sort((a,b)=>{
+  const score=f=>{const t=flightDate(f,type);if(ended(f))return 2;if(Number.isFinite(t)&&t>=now-15*60000)return 0;return 1};
+  const sa=score(a),sb=score(b);if(sa!==sb)return sa-sb;
+  const ta=flightDate(a,type),tb=flightDate(b,type);
+  if(sa===0)return ta-tb;
+  if(sa===2)return (Number.isFinite(tb)?tb:0)-(Number.isFinite(ta)?ta:0);
+  return (Number.isFinite(tb)?tb:0)-(Number.isFinite(ta)?ta:0);
+ });
+}
+function renderFlight(type){
+ const list=orderedFlights(type);if(!list.length)return false;
+ const f=list[cursor[type]%list.length],arrival=type==='arrivals';
+ const prefix=arrival?'arr':'dep';
+ $(prefix+'title').textContent=[clean(f.number)||'Flight',clean(f.airline)].filter(Boolean).join(' · ');
  const airport=arrival?f.origin:f.destination;
- $(arrival?'arrsub':'depsub').textContent=(arrival?'From ':'To ')+(airport||'Route unavailable')+' · '+(arrival?'ETA/Scheduled ':'Scheduled ')+time(arrival?f.arrivalTime:f.departureTime)+' · '+(f.aircraft||'Aircraft unknown');
- $(arrival?'arrtag':'deptag').textContent=(f.status||'Status unknown').toUpperCase();return true;}
-function renderPosition(){const a=[...(flights.arrivals||[]),...(flights.departures||[])].find(f=>f.location?.lat!=null&&f.location?.lon!=null);if(!a)return false;
- const altitude=a.location.altitude?.feet??a.location.altitude?.pressureAltitude?.feet;
+ const t=flightTime(arrival?f.arrivalTime:f.departureTime);
+ $(prefix+'sub').textContent=(arrival?'From ':'To ')+(airport||'Route unavailable')+' · '+(arrival?'Arrival ':'Departure ')+t+' · '+(f.aircraft||'Aircraft unknown');
+ $(prefix+'tag').textContent=(f.status||'Scheduled').toUpperCase();
+ return true;
+}
+function positionedFlights(){
+ const seen=new Set();return [...(flights.arrivals||[]),...(flights.departures||[])].filter(f=>{
+  if(f?.location?.lat==null||f?.location?.lon==null)return false;
+  const key=clean(f.number)||JSON.stringify([f.location.lat,f.location.lon]);if(seen.has(key))return false;seen.add(key);return true;
+ });
+}
+function renderPosition(){
+ const list=positionedFlights();if(!list.length)return false;
+ const a=list[cursor.positions%list.length];
+ const loc=a.location||{};
+ const altitude=loc.altitude?.feet??loc.altitude?.pressureAltitude?.feet??loc.pressureAltitude?.feet;
  $('postitle').textContent=(a.number||'Aircraft')+' · '+(a.airline||a.aircraft||'Position reported');
- const age=flightFetched?Math.round((Date.now()-flightFetched)/60000):null;
- $('possub').textContent=(altitude!=null?'Altitude '+Math.round(altitude).toLocaleString()+' ft · ':'')+'Last dataset: '+(age===null?'unknown':age+' min ago')+' · Position may be stale';return true;}
-async function loadFlights(){try{const d=await get(API);if(!Array.isArray(d.arrivals)||!Array.isArray(d.departures))throw Error('Invalid response');flights=d;flightFetched=Date.parse(d.updated)||Date.now();
- const next=['weather'];if(renderFlight('arrivals'))next.push('arrivals');if(renderFlight('departures'))next.push('departures');if(renderPosition())next.push('positions');available=next;
- $('updated').textContent='Flight feed updated '+tf.format(new Date(flightFetched)).slice(0,5)+' · cached data';
- }catch(e){available=['weather'];$('updated').textContent='Flight feed unavailable · weather online';console.warn('Flight feed unavailable:',e.message)}
- showPanel();}
-function showPanel(){if(panel>=available.length)panel=0;const name=available[panel];for(const p of ['weather','arrivals','departures','positions'])$(p).classList.toggle('active',name===p);$('mode').textContent=({weather:'LIVE WEATHER',arrivals:'AIRPORT ARRIVALS',departures:'AIRPORT DEPARTURES',positions:'AIRCRAFT POSITION'})[name]}
+ const report=loc.reportedAtUtc?Date.parse(loc.reportedAtUtc):NaN;
+ const age=Number.isFinite(report)?Math.max(0,Math.round((Date.now()-report)/60000)):null;
+ $('possub').textContent=(altitude!=null?'Altitude '+Math.round(altitude).toLocaleString()+' ft · ':'')+(age!==null?'Reported '+age+' min ago':'Report time unknown')+' · Historical/cached position';
+ return true;
+}
+function showPanel(){
+ if(panel>=available.length)panel=0;
+ const name=available[panel];
+ for(const p of ['weather','arrivals','departures','positions'])$(p).classList.toggle('active',name===p);
+ $('mode').textContent=({weather:'LIVE WEATHER',arrivals:'AIRPORT ARRIVALS',departures:'AIRPORT DEPARTURES',positions:'AIRCRAFT POSITION'})[name];
+ if(name==='arrivals'||name==='departures')renderFlight(name);
+ if(name==='positions')renderPosition();
+}
+async function loadFlights(){
+ try{
+  const d=await get(API);
+  if(!Array.isArray(d.arrivals)||!Array.isArray(d.departures))throw Error('Invalid response');
+  flights=d;flightFetched=Date.parse(d.updated)||Date.now();
+  const next=['weather'];
+  if(d.arrivals.length)next.push('arrivals');
+  if(d.departures.length)next.push('departures');
+  if(positionedFlights().length)next.push('positions');
+  available=next;
+  $('updated').textContent='Dataset '+tf.format(new Date(flightFetched)).slice(0,5)+' · cached flight data';
+ }catch(e){
+  available=['weather'];
+  $('updated').textContent='Flight feed unavailable · weather online';
+  console.warn('Flight feed unavailable:',e.message);
+ }
+ showPanel();
+}
 loadWeather();loadFlights();setInterval(loadWeather,300000);
-// Requests every 15 minutes are made to YOUR Worker. Its backend 6-hour cache determines paid API use.
-// That cache is not globally guaranteed; secure/rate-limit the Worker before public use.
-setInterval(loadFlights,900000);setInterval(()=>{panel=(panel+1)%available.length;showPanel()},12000);
+// Cached Worker data is NOT live. Server-side rate limits and provider licensing are necessary before broadcasting.
+setInterval(loadFlights,900000);
+setInterval(()=>{
+ const current=available[panel];if(current in cursor)cursor[current]++;
+ panel=(panel+1)%available.length;
+ showPanel();
+},12000);
 })();
 </script></body></html>
