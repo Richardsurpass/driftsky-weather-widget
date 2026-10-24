@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>driftsky v12 | Leeds Bradford Airport</title>
+<title>driftsky v14 | Leeds Bradford Airport</title>
 <style>
 :root{--blue:#268fff;--light:#94caff;--line:#284e7c;--white:#fff;--muted:#c1d5ed}
 *{box-sizing:border-box}
@@ -12,15 +12,15 @@ html,body{margin:0;width:100%;height:100%;background:transparent!important;color
 .brand{width:12%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:12px;padding:8px 10px;border-right:1px solid #2862a7;overflow:hidden}
 .logo{font-size:clamp(14px,1.58vw,29px);font-weight:900;font-style:italic;letter-spacing:-1px;white-space:nowrap}.logo span{color:var(--blue)}
 .live{font-size:clamp(9px,.83vw,13px);font-weight:800;white-space:nowrap;letter-spacing:.03em}.dot{display:inline-block;width:9px;height:9px;background:#ff365a;border-radius:50%;margin-right:6px}
-.main{flex:1;min-width:0;display:grid;grid-template-rows:22px minmax(43px,1fr) 26px 35px 11px;gap:3px;padding:7px 12px 5px;overflow:hidden}
+.main{flex:1;min-width:0;display:grid;grid-template-rows:22px minmax(38px,1fr) 26px 35px 11px;gap:3px;padding:7px 12px 5px;overflow:hidden}
 .header{min-width:0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);gap:12px;overflow:hidden}
 .airport{font-size:clamp(13px,1.28vw,22px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.airport b{color:var(--blue)}
 .subtitle{color:#9dcbff;font-size:clamp(9px,.72vw,13px);font-weight:900;letter-spacing:.07em;white-space:nowrap}
 .flights{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;min-height:0;overflow:hidden}
-.flight{display:flex;flex-direction:column;justify-content:space-around;gap:1px;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line);background:rgba(14,37,71,.75);border-radius:6px;padding:3px 8px}
-.flightTitle{color:var(--light);font-size:clamp(9px,.79vw,13px);font-weight:900;white-space:nowrap}
-.flightValue{font-size:clamp(12px,1.06vw,19px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.12}
-.flightMeta{color:var(--muted);font-size:clamp(9px,.74vw,13px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flight{display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:0;min-height:0;overflow:hidden;border:1px solid var(--line);background:rgba(14,37,71,.75);border-radius:6px;padding:4px 9px}
+.flightTitle{color:var(--light);font-size:clamp(9px,.73vw,12px);font-weight:900;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 0 auto}
+.flightData{display:flex;align-items:center;gap:8px;min-width:0;flex:0 0 auto;line-height:1.08}.flightValue{flex:1;min-width:0;font-size:clamp(11px,1.03vw,18px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.08}
+.flightMeta{flex:0 1 24%;min-width:0;max-width:24%;text-align:right;color:var(--muted);font-size:clamp(9px,.70vw,12px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
 .board{display:flex;align-items:center;min-width:0;overflow:hidden;gap:9px;padding:3px 9px;border:1px solid #285184;background:#081c36;border-radius:5px}
 .boardLabel{font-size:clamp(10px,.77vw,13px);font-weight:900;color:var(--light);white-space:nowrap;flex-shrink:0}
 .boardData{flex:1;min-width:0;font-size:clamp(11px,.89vw,16px);font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -31,7 +31,18 @@ html,body{margin:0;width:100%;height:100%;background:transparent!important;color
 .metricValue{font-size:clamp(13px,1.29vw,23px);font-weight:900;line-height:1.1;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .footer{display:flex;justify-content:space-between;align-items:center;gap:10px;min-width:0;overflow:hidden;color:#acc2d7;font-size:clamp(8px,.55vw,10px);white-space:nowrap}
 .footer span{min-width:0;overflow:hidden;text-overflow:ellipsis}
-@media(max-width:850px){.main{padding:5px 6px 4px;grid-template-rows:20px minmax(43px,1fr) 25px 34px 10px;gap:2px}.brand{padding:6px}.flights{gap:4px}.flight{padding:3px 5px}.board{gap:5px}.subtitle{display:none}}
+@media(max-width:850px){.main{padding:5px 6px 4px;grid-template-rows:20px minmax(38px,1fr) 25px 34px 10px;gap:2px}.brand{padding:6px}.flights{gap:4px}.flight{padding:3px 5px;gap:3px}.flightMeta{max-width:22%}.board{gap:5px}.subtitle{display:none}}
+
+/* v14 compact broadcast lower-third */
+#bar{height:96px;min-height:0;max-height:96px;bottom:1.5%;border-radius:9px}
+.brand{width:10%;gap:5px;padding:5px 9px}.logo{font-size:clamp(13px,1.25vw,22px)}.live{font-size:clamp(8px,.65vw,11px)}
+.main{display:grid;grid-template-rows:18px 35px 20px;gap:3px;padding:5px 10px}
+.header{height:18px}.airport{font-size:clamp(11px,1vw,17px)}.subtitle{font-size:10px}
+.flights{gap:6px}.flight{padding:3px 7px;gap:2px;justify-content:center}.flightTitle{font-size:clamp(8px,.65vw,11px)}
+.flightData{gap:5px}.flightValue{font-size:clamp(10px,.85vw,15px)}.flightMeta{font-size:clamp(8px,.65vw,11px)}
+.board,.footer{display:none!important}
+.weather{gap:5px;border-top:1px solid #285184}.metricName{font-size:clamp(7px,.55vw,9px)}.metricValue{font-size:clamp(10px,.85vw,15px);margin-top:0}
+@media(max-width:850px){#bar{height:88px;max-height:88px}.main{grid-template-rows:17px 32px 18px;gap:3px;padding:5px}.brand{width:11%}.subtitle{display:none}.flightMeta{display:none}}
 </style>
 </head>
 <body>
@@ -43,8 +54,8 @@ html,body{margin:0;width:100%;height:100%;background:transparent!important;color
   <main class="main">
     <header class="header"><div class="airport">LEEDS BRADFORD <b>EGNM</b></div><div class="subtitle">FLIGHT INFORMATION</div></header>
     <section class="flights">
-      <div class="flight"><div class="flightTitle">🛬 NEXT EXPECTED ARRIVAL</div><div class="flightValue" id="arrival">Checking flights…</div><div class="flightMeta" id="arrivalMeta">Waiting for an update</div></div>
-      <div class="flight"><div class="flightTitle">🛫 NEXT EXPECTED DEPARTURE</div><div class="flightValue" id="departure">Checking flights…</div><div class="flightMeta" id="departureMeta">Waiting for an update</div></div>
+      <div class="flight"><div class="flightTitle">🛬 NEXT EXPECTED ARRIVAL</div><div class="flightData"><div class="flightValue" id="arrival">Checking flights…</div><div class="flightMeta" id="arrivalMeta">Waiting</div></div></div>
+      <div class="flight"><div class="flightTitle">🛫 NEXT EXPECTED DEPARTURE</div><div class="flightData"><div class="flightValue" id="departure">Checking flights…</div><div class="flightMeta" id="departureMeta">Waiting</div></div></div>
     </section>
     <section class="board" id="board"><span class="boardLabel" id="boardLabel">🛬 ARRIVALS</span><span class="boardData" id="boardData">Checking timetable…</span><span class="boardIndex" id="boardIndex"></span></section>
     <section class="weather">
@@ -53,7 +64,7 @@ html,body{margin:0;width:100%;height:100%;background:transparent!important;color
       <div class="metric"><div class="metricName">WIND</div><div class="metricValue" id="wind">--</div></div>
       <div class="metric"><div class="metricName">CONDITIONS</div><div class="metricValue" id="conditions">Loading…</div></div>
     </section>
-    <footer class="footer"><span>Weather: Open-Meteo (CC BY 4.0) · Flights: AeroDataBox · aerodatabox.com</span><span id="updated">v12 · Checking feeds…</span></footer>
+    <footer class="footer"><span>Weather: Open-Meteo (CC BY 4.0) · Flights: AeroDataBox · aerodatabox.com</span><span id="updated">v14 · Checking feeds…</span></footer>
   </main>
 </section>
 <script>
@@ -81,14 +92,14 @@ function planned(type){const now=Date.now();return (feed[type]||[]).filter(f=>{
 function renderMain(){for(const type of ['arrivals','departures']){
   const f=planned(type)[0],arrival=type==='arrivals',key=arrival?'arrival':'departure',route=arrival?'origin':'destination',tm=arrival?'arrivalTime':'departureTime';
   el(key).textContent=f?`${f.number||'Flight'} · ${f[route]||'Route TBC'} · ${time(f[tm])}`:(flightReady?'No upcoming flights in this feed':'Awaiting timetable');
-  el(key+'Meta').textContent=f?`${f.airline||'Airline TBC'} · ${f.status||'Scheduled'} · ${f.aircraft||'Aircraft TBC'}`:(flightReady?'Next update scheduled by Cloudflare':'Flight cache not yet available');
+  el(key+'Meta').textContent=f?((f.status && f.status!=='Unknown')?f.status:(f.airline||'Scheduled')):(flightReady?'No flights':'No feed');
 } renderBoard()}
 function renderBoard(){const type=Math.floor(boardStep/3)%2===0?'arrivals':'departures';const list=planned(type).slice(0,6);const index=Math.floor(boardStep%3)%Math.max(1,list.length),f=list[index];
   el('boardLabel').textContent=type==='arrivals'?'🛬 ARRIVALS':'🛫 DEPARTURES';
   el('boardData').textContent=f?`${f.number||'Flight'} · ${f.airline||'Airline'} · ${type==='arrivals'?'From':'To'} ${f[type==='arrivals'?'origin':'destination']||'Route TBC'} · ${time(f[type==='arrivals'?'arrivalTime':'departureTime'])} · ${f.status||'Scheduled'}`:(flightReady?'No upcoming flights listed':'Timetable unavailable until next update');
   el('boardIndex').textContent=f?`${index+1}/${list.length}`:'';
 }
-function showStatus(){const flightStatus=lastFlightUpdate?('Flights '+stamp(lastFlightUpdate)):(flightReady?'Flights pending':'Flights offline');const weatherStatus=lastWeatherUpdate?('Weather '+stamp(lastWeatherUpdate)):'Weather offline';el('updated').textContent=`v12 · ${flightStatus} · ${weatherStatus}`}
+function showStatus(){const flightStatus=lastFlightUpdate?('Flights '+stamp(lastFlightUpdate)):(flightReady?'Flights pending':'Flights offline');const weatherStatus=lastWeatherUpdate?('Weather '+stamp(lastWeatherUpdate)):'Weather offline';el('updated').textContent=`v14 · ${flightStatus} · ${weatherStatus}`}
 async function requestJSON(url){const c=new AbortController(),timer=setTimeout(()=>c.abort(),13000);try{
   const response=await fetch(url,{signal:c.signal,cache:'no-store'});
   if(!response.ok)throw Error('HTTP '+response.status);
