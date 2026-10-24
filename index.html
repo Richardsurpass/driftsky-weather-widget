@@ -26,7 +26,13 @@ async function get(url){const controller=new AbortController(), timer=setTimeout
 async function loadWeather(){try{const d=(await get(METEO)).current;if(!d)throw Error('No readings');$('temp').textContent=Math.round(d.temperature_2m)+'°C';$('wind').textContent=dirs[Math.round(d.wind_direction_10m/22.5)%16]+' '+Math.round(d.wind_speed_10m)+' mph';$('conditions').textContent=weatherCodes[d.weather_code]||'Variable'}catch(e){$('conditions').textContent='Weather unavailable'}}
 let flights=[], available=['weather'], panel=0,flightFetched=null;
 const clean=x=>String(x??'').trim();
-function time(s){if(!s)return 'Time unavailable';const m=String(s).match(/T(\d\d:\d\d)/);return m?m[1]:'Time unavailable'}
+
+function time(s) {
+  if (!s) return 'Time unavailable';
+  const m = String(s).match(/[T ](\d{2}:\d{2})/);
+  return m ? m[1] : 'Time unavailable';
+}
+
 function renderFlight(type){const list=flights[type]||[];if(!list.length)return false;const f=list.find(x=>x.status&&x.status!=='Unknown')||list[0],arrival=type==='arrivals';
  $(arrival?'arrtitle':'deptitle').textContent=[clean(f.number)||'Flight',clean(f.airline)].filter(Boolean).join(' · ');
  const airport=arrival?f.origin:f.destination;
