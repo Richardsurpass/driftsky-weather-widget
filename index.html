@@ -15,7 +15,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
   --line:#244c82;
 }
 #bar{
-  position:absolute;left:1.1%;bottom:2.4%;width:97.8%;height:25%;min-height:205px;max-height:278px;
+  position:absolute;left:1.1%;bottom:2.4%;width:97.8%;height:18%;min-height:160px;max-height:205px;
   display:flex;overflow:hidden;
   background:linear-gradient(110deg,var(--bg1),var(--bg2));
   border:2px solid var(--cyan);border-radius:14px;box-shadow:0 0 18px rgba(22,139,255,.35);
@@ -29,29 +29,29 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 .logo span{color:var(--cyan)}
 .live{font-size:clamp(10px,.9vw,15px);font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .dot{width:11px;height:11px;border-radius:50%;background:#ff2645;display:inline-block;box-shadow:0 0 8px rgba(255,38,69,.45)}
-.right{flex:1;min-width:0;padding:10px 16px 10px;display:flex;flex-direction:column;gap:6px;justify-content:space-between}
-.head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:7px;flex:0 0 auto}
+.right{flex:1;min-width:0;padding:5px 13px 6px;display:flex;flex-direction:column;gap:3px;justify-content:space-between}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:3px;flex:0 0 auto}
 .airport{font-size:clamp(14px,1.6vw,24px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .airport b{color:var(--cyan)}
 .mode{font-size:clamp(11px,.92vw,16px);font-weight:800;color:#9dcdff;letter-spacing:.06em;white-space:nowrap}
-.weather{display:flex;align-items:center;gap:16px;min-width:0;flex:1 1 auto;min-height:48px}
+.weather{display:flex;align-items:center;gap:16px;min-width:0;flex:1 1 auto;min-height:31px}
 .metric{flex:1;min-width:0;border-right:1px solid #244b78;padding-right:10px}
 .metric:last-child{border-right:0}
 .name{font-size:clamp(9px,.83vw,14px);font-weight:700;color:#8fc2ff;letter-spacing:.08em}
-.val{margin-top:4px;font-size:clamp(15px,1.72vw,30px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.val.small{font-size:clamp(13px,1.35vw,24px)}
-.nextFlights{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:38px;flex:0 0 42px;align-items:stretch}
-.nextItem{background:rgba(8,35,67,.8);border:1px solid #244c82;border-radius:7px;padding:5px 10px;min-width:0;display:flex;align-items:center;gap:10px}
+.val{margin-top:2px;font-size:clamp(14px,1.5vw,25px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.val.small{font-size:clamp(12px,1.2vw,21px)}
+.nextFlights{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:29px;flex:0 0 31px;align-items:stretch}
+.nextItem{background:rgba(8,35,67,.8);border:1px solid #244c82;border-radius:7px;padding:3px 8px;min-width:0;display:flex;align-items:center;gap:10px}
 .nextLabel{color:#91caff;font-size:clamp(10px,.75vw,13px);font-weight:900;white-space:nowrap}
 .nextText{font-size:clamp(12px,1.05vw,18px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tickerWrap{
-  flex:0 0 38px;height:38px;border-top:1px solid rgba(100,166,255,.32);
+  flex:0 0 31px;height:31px;border-top:1px solid rgba(100,166,255,.32);
   display:flex;align-items:center;gap:10px;min-width:0;padding-top:3px;overflow:hidden
 }
 .tickerLabel{
   display:flex;align-items:center;gap:8px;min-width:max-content;
   font-size:clamp(10px,.92vw,15px);font-weight:800;color:#a8d3ff;
-  border:1px solid #2676bc;border-radius:999px;padding:6px 11px;background:rgba(2,8,20,.65)
+  border:1px solid #2676bc;border-radius:999px;padding:3px 9px;background:rgba(2,8,20,.65)
 }
 #planeIcon{display:inline-block;transform-origin:center;filter:drop-shadow(0 0 4px rgba(22,139,255,.45))}
 #planeIcon.arrive{animation:landIn 0.8s ease}
@@ -75,17 +75,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 @keyframes scrollLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .tickerContent{display:inline-flex;align-items:center;padding-right:46px;font-size:clamp(12px,1vw,18px);font-weight:700;color:#fff}
 .tickerContent .sep{color:#62aaff;padding:0 14px;font-weight:700}
-.footer{display:flex;justify-content:space-between;gap:10px;font-size:clamp(8px,.62vw,11px);color:#9ab8d8;white-space:nowrap;overflow:hidden;flex:0 0 13px;line-height:13px}
+.footer{display:flex;justify-content:space-between;gap:10px;font-size:clamp(8px,.62vw,11px);color:#9ab8d8;white-space:nowrap;overflow:hidden;flex:0 0 11px;line-height:11px}
 .footer span{overflow:hidden;text-overflow:ellipsis}
 @media (max-width:900px){
   .brand{width:18%;min-width:0;padding:8px 10px}
   .right{padding:6px 8px 8px}
   .weather{gap:8px}
-  .nextFlights{gap:5px;flex-basis:38px;min-height:36px}
+  .nextFlights{gap:5px;flex-basis:30px;min-height:28px}
   .nextItem{padding:3px 5px;gap:5px}
   .nextLabel{font-size:9px}
   .nextText{font-size:11px}
-  .tickerWrap{gap:6px;flex-basis:36px;height:36px}
+  .tickerWrap{gap:6px;flex-basis:30px;height:30px}
   .tickerLabel{padding:5px 8px}
 }
 </style>
