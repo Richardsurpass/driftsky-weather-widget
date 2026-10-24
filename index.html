@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>driftsky | Leeds Bradford weather and flights overlay v8</title>
+<title>driftsky | Leeds Bradford weather and flights overlay v10</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;color:#fff;font-family:Arial,Helvetica,sans-serif}
@@ -15,13 +15,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
   --line:#244c82;
 }
 #bar{
-  position:absolute;left:1.1%;bottom:2.4%;width:97.8%;height:18%;min-height:160px;max-height:205px;
+  position:absolute;left:1.1%;bottom:2.4%;width:97.8%;height:19.5%;min-height:180px;max-height:225px;
   display:flex;overflow:hidden;
   background:linear-gradient(110deg,var(--bg1),var(--bg2));
   border:2px solid var(--cyan);border-radius:14px;box-shadow:0 0 18px rgba(22,139,255,.35);
 }
 .brand{
-  width:15.5%;min-width:160px;max-width:250px;
+  width:15%;min-width:140px;max-width:230px;
   border-right:2px solid #1576d2;padding:12px 18px;
   display:flex;flex-direction:column;justify-content:center;gap:8px
 }
@@ -29,19 +29,19 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 .logo span{color:var(--cyan)}
 .live{font-size:clamp(10px,.9vw,15px);font-weight:700;letter-spacing:.08em;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .dot{width:11px;height:11px;border-radius:50%;background:#ff2645;display:inline-block;box-shadow:0 0 8px rgba(255,38,69,.45)}
-.right{flex:1;min-width:0;padding:5px 13px 6px;display:flex;flex-direction:column;gap:3px;justify-content:space-between}
-.head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:3px;flex:0 0 auto}
+.right{flex:1;min-width:0;padding:7px 13px 7px;display:flex;flex-direction:column;gap:5px;justify-content:space-between}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:4px;flex:0 0 27px;min-height:0}
 .airport{font-size:clamp(14px,1.6vw,24px);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .airport b{color:var(--cyan)}
 .mode{font-size:clamp(11px,.92vw,16px);font-weight:800;color:#9dcdff;letter-spacing:.06em;white-space:nowrap}
-.weather{display:flex;align-items:center;gap:16px;min-width:0;flex:1 1 auto;min-height:31px}
+.weather{display:flex;align-items:center;gap:14px;min-width:0;flex:0 0 43px;min-height:0;border-top:1px solid #244b78;padding-top:4px}
 .metric{flex:1;min-width:0;border-right:1px solid #244b78;padding-right:10px}
 .metric:last-child{border-right:0}
 .name{font-size:clamp(9px,.83vw,14px);font-weight:700;color:#8fc2ff;letter-spacing:.08em}
-.val{margin-top:2px;font-size:clamp(14px,1.5vw,25px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.val{margin-top:2px;font-size:clamp(14px,1.35vw,23px);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .val.small{font-size:clamp(12px,1.2vw,21px)}
-.nextFlights{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:29px;flex:0 0 31px;align-items:stretch}
-.nextItem{background:rgba(8,35,67,.8);border:1px solid #244c82;border-radius:7px;padding:3px 8px;min-width:0;display:flex;align-items:center;gap:10px}
+.nextFlights{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0;flex:0 0 39px;align-items:stretch}
+.nextItem{background:rgba(8,35,67,.8);border:1px solid #244c82;border-radius:7px;padding:5px 8px;min-width:0;display:flex;align-items:center;gap:10px}
 .nextLabel{color:#91caff;font-size:clamp(10px,.75vw,13px);font-weight:900;white-space:nowrap}
 .nextText{font-size:clamp(12px,1.05vw,18px);font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tickerWrap{
@@ -71,17 +71,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
   display:inline-flex;align-items:center;gap:0;white-space:nowrap;min-width:max-content;
   will-change:transform;animation:scrollLeft 85s linear infinite;
 }
-.tickerTrack.paused{animation-play-state:paused}
+.tickerTrack.paused{animation-play-state:paused}.tickerTrack.empty{animation:none!important;transform:none!important}
 @keyframes scrollLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .tickerContent{display:inline-flex;align-items:center;padding-right:46px;font-size:clamp(12px,1vw,18px);font-weight:700;color:#fff}
 .tickerContent .sep{color:#62aaff;padding:0 14px;font-weight:700}
-.footer{display:flex;justify-content:space-between;gap:10px;font-size:clamp(8px,.62vw,11px);color:#9ab8d8;white-space:nowrap;overflow:hidden;flex:0 0 11px;line-height:11px}
+.footer{display:flex;justify-content:space-between;gap:10px;font-size:clamp(8px,.62vw,11px);color:#9ab8d8;white-space:nowrap;overflow:hidden;flex:0 0 12px;line-height:12px}
 .footer span{overflow:hidden;text-overflow:ellipsis}
 @media (max-width:900px){
   .brand{width:18%;min-width:0;padding:8px 10px}
   .right{padding:6px 8px 8px}
-  .weather{gap:8px}
-  .nextFlights{gap:5px;flex-basis:30px;min-height:28px}
+  .weather{gap:8px;flex-basis:42px}
+  .nextFlights{gap:5px;flex-basis:37px;min-height:0}
   .nextItem{padding:3px 5px;gap:5px}
   .nextLabel{font-size:9px}
   .nextText{font-size:11px}
@@ -100,14 +100,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
   <div class="right">
     <div class="head">
       <span class="airport">LEEDS BRADFORD <b>EGNM</b></span>
-      <span class="mode" id="mode">LIVE WEATHER</span>
-    </div>
-
-    <div class="weather">
-      <div class="metric"><div class="name">UK TIME</div><div id="clock" class="val">--:--:--</div></div>
-      <div class="metric"><div class="name">TEMPERATURE</div><div id="temp" class="val">--°C</div></div>
-      <div class="metric"><div class="name">WIND</div><div id="wind" class="val small">--</div></div>
-      <div class="metric"><div class="name">CONDITIONS</div><div id="conditions" class="val small">Loading…</div></div>
+      <span class="mode" id="mode">FLIGHT INFORMATION</span>
     </div>
 
     <div class="nextFlights">
@@ -122,6 +115,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
           <div id="tickerContentB" class="tickerContent">Loading flights…</div>
         </div>
       </div>
+    </div>
+
+    <div class="weather">
+      <div class="metric"><div class="name">UK TIME</div><div id="clock" class="val">--:--:--</div></div>
+      <div class="metric"><div class="name">TEMPERATURE</div><div id="temp" class="val">--°C</div></div>
+      <div class="metric"><div class="name">WIND</div><div id="wind" class="val small">--</div></div>
+      <div class="metric"><div class="name">CONDITIONS</div><div id="conditions" class="val small">Loading…</div></div>
     </div>
 
     <div class="footer">
@@ -222,9 +222,10 @@ function setTicker(type){
   void $('tickerTrack').offsetWidth;
   $('tickerTrack').style.animation='';
   $('tickerContentA').innerHTML = html;
-  $('tickerContentB').innerHTML = html;
   const noData = /No .* data available/.test(html);
+  $('tickerContentB').innerHTML = noData ? '' : html;
   $('tickerTrack').classList.toggle('paused', noData);
+  $('tickerTrack').classList.toggle('empty', noData);
 }
 function cycleTicker(){ setTicker(currentTicker==='arrivals' ? 'departures' : 'arrivals'); }
 
@@ -272,7 +273,7 @@ loadWeather();
 loadFlights();
 setInterval(loadWeather,300000);
 setInterval(loadFlights,900000);
-setInterval(cycleTicker,45000);
+setInterval(cycleTicker,60000);
 setInterval(updateNext,60000);
 })();
 </script>
