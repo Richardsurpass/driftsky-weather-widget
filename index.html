@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>driftsky v17 | EGNM Broadcast Overlay</title>
+<title>driftsky v18 | EGNM Broadcast Overlay + Live Likes</title>
 <style>
 :root{--electric:#168dff;--soft:#80bfff;--white:#f7fbff;--muted:#bbcee4;--navy:rgba(4,10,20,.96);--rule:rgba(36,146,255,.53)}
 *{box-sizing:border-box}
@@ -21,7 +21,15 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 .airport .slash{margin:0 5px;color:var(--electric);font-weight:500}
 .clock{font-size:clamp(11px,.88vw,17px);letter-spacing:.09em;color:#e0ecf7;font-weight:650;margin-left:31px;font-variant-numeric:tabular-nums}
 .ico{color:var(--electric);width:clamp(16px,1.2vw,25px);height:clamp(16px,1.2vw,25px);flex:none;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.brand{justify-self:center;font-weight:900;font-style:italic;font-size:clamp(23px,2.00vw,38px);letter-spacing:-1.5px;white-space:nowrap;text-shadow:0 1px 2px #000}
+/* Compact centre group: logo plus live YouTube likes. */
+.brand-group{justify-self:center;display:flex;align-items:center;gap:clamp(8px,.75vw,15px);white-space:nowrap;min-width:0}
+.brand{font-weight:900;font-style:italic;font-size:clamp(22px,1.85vw,36px);letter-spacing:-1.5px;white-space:nowrap;text-shadow:0 1px 2px #000}
+.likes-pill{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid rgba(37,144,255,.58);border-radius:7px;background:rgba(20,42,75,.7);font-weight:800;font-size:clamp(11px,.77vw,16px);font-variant-numeric:tabular-nums;color:#f6faff}
+.likes-pill svg{flex:none;width:clamp(15px,1.05vw,20px);height:clamp(15px,1.05vw,20px);fill:none;stroke:#65b8ff;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.likes-pill .likes-label{color:#c4dffc}
+.likes-pill #likes-value{min-width:1ch}
+.likes-pill.flash{animation:likes-flash .6s ease-out}
+@keyframes likes-flash{30%{border-color:#8ee5ff;box-shadow:0 0 12px rgba(24,134,247,.55)}}
 .weather{justify-self:end;display:flex;align-items:center;min-width:0;white-space:nowrap;gap:clamp(7px,.8vw,18px);font-weight:750;font-size:clamp(11px,.9vw,18px)}
 .weather .piece{display:flex;gap:6px;align-items:center;max-width:160px}
 .weather .divider{width:1px;height:24px;background:var(--rule)}
@@ -52,7 +60,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 .accent.bottom-right{right:.6%;bottom:1.6%;width:65px;height:clamp(65px,7.0vh,84px)}
 /* Keep the original photo clear even on a 720p YouTube player. */
 @media(max-width:1350px){.top{padding-left:44px;padding-right:44px}.airport{gap:5px}.airport .slash{margin:0 1px}.location{max-width:36vw}.bottom{padding-left:48px;padding-right:48px}.flight{gap:8px}.flight+.flight{padding-left:14px}.weather{gap:8px}.weather .piece{gap:4px}}
-@media(max-width:1050px){.top{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}.airport{font-size:11px}.weather{font-size:11px}.weather .piece:nth-of-type(3){display:none}.brand{font-size:22px}.bottom{padding-left:40px;padding-right:40px}.lineup{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 128px}.flight-main{font-size:13px}.subscribe{font-size:10px}}
+@media(max-width:1050px){.top{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}.airport{font-size:11px}.weather{font-size:11px}.weather .piece:nth-of-type(3){display:none}.brand{font-size:21px}.brand-group{gap:7px}.likes-pill{padding:5px 7px;font-size:10px}.likes-pill .likes-label{display:none}.bottom{padding-left:40px;padding-right:40px}.lineup{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 128px}.flight-main{font-size:13px}.subscribe{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.subscribe.highlight .bell{animation:none}}
 </style>
 </head>
@@ -66,7 +74,13 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
       </div>
       <div class="clock" id="clock">--:--:--</div>
     </section>
-    <div class="brand">drift<span class="blue">sky</span></div>
+    <div class="brand-group" aria-label="driftsky live likes">
+      <div class="brand">drift<span class="blue">sky</span></div>
+      <div class="likes-pill" id="likes-pill" title="YouTube livestream likes – waiting for the live stream to be connected">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v11H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3Z"/><path d="M7 10 12 3a2 2 0 0 1 3.5 1.7L14 9h5.5a2.5 2.5 0 0 1 2.45 3l-1.8 7a3 3 0 0 1-2.9 2H7"/></svg>
+        <span class="likes-label">Likes:</span><span id="likes-value">—</span>
+      </div>
+    </div>
     <section class="weather" aria-label="Weather near Leeds Bradford Airport">
       <span class="piece"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h12a3 3 0 1 0-3-3"/><path d="M2 12h17a3 3 0 1 1-3 3"/><path d="M4 17h9a3 3 0 1 1-3 3"/></svg><span id="wind">-- mph</span></span>
       <span class="divider"></span>
@@ -109,6 +123,8 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 (()=>{'use strict';
   // No API secret is included in this publicly hosted page.
   const FLIGHTS_URL='https://driftsky-flight-data.rick-harrison.workers.dev/flights';
+  // Configure the separate private-key YouTube Worker before this counter can display numbers.
+  const LIKES_URL='https://driftsky-youtube-likes.rick-harrison.workers.dev/likes';
   const WEATHER_URL='https://api.open-meteo.com/v1/forecast?latitude=53.8659&longitude=-1.6606&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code&wind_speed_unit=mph&timezone=Europe%2FLondon';
   const $=id=>document.getElementById(id);
   const clockFormat=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
@@ -192,10 +208,27 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
       console.warn('Flight feed unavailable',error.message);
     }
   }
-  updateWeather();updateFlights();
+  let lastLikes=null;
+  async function updateLikes(){
+    try{
+      const data=await getJSON(LIKES_URL);
+      if(!Number.isSafeInteger(data.likes)||data.likes<0)throw new Error('Likes not available');
+      const value=data.likes;
+      setText('likes-value',new Intl.NumberFormat('en-GB').format(value));
+      const pill=$('likes-pill');
+      pill.title='YouTube livestream likes · updated '+clockFormat.format(new Date(data.updatedAt||Date.now()));
+      if(lastLikes!==null && value>lastLikes){pill.classList.remove('flash');void pill.offsetWidth;pill.classList.add('flash');}
+      lastLikes=value;
+    }catch(error){
+      if(lastLikes===null){setText('likes-value','—');$('likes-pill').title='Likes not connected or temporarily unavailable';}
+      console.warn('Live likes not available:',error.message);
+    }
+  }
+  updateWeather();updateFlights();updateLikes();
   setInterval(updateWeather,5*60*1000);
   // Polls Cloudflare's KV-backed feed, not the paid flight provider.
   setInterval(updateFlights,2*60*1000);
+  setInterval(updateLikes,60*1000);
   setInterval(()=>{const element=$('subscribe');element.classList.remove('highlight');void element.offsetWidth;element.classList.add('highlight');},30000);
 })();
 </script>
